@@ -48,7 +48,7 @@
 
 % Configuração do código Julia
 \lstset{
-    language=Python,
+    language=Julia,
     basicstyle=\ttfamily\footnotesize,
     commentstyle=\color{gray},
     keywordstyle=\color{blue},
@@ -399,7 +399,7 @@ A implementação utilizou os seguintes pacotes Julia:
 
 O código fonte foi organizado em módulos funcionais para facilitar manutenção e extensibilidade:
 
-\begin{lstlisting}[language=Python, caption=Estrutura modular do código Julia]
+\begin{lstlisting}[language=Julia, caption=Estrutura modular do código Julia]
 module BeerRecommendation
     using DataFrames, LinearAlgebra, Statistics, CSV
     
@@ -715,7 +715,7 @@ Floral & Aromas florais delicados & \underline{\hspace{1cm}} \\
 
 \subsubsection{Módulo Principal (main.jl)}
 
-\begin{lstlisting}[language=Python, caption=Código principal do sistema de recomendação]
+\begin{lstlisting}[language=Julia, caption=Código principal do sistema de recomendação]
 module BeerRecommendation
 
 using DataFrames, LinearAlgebra, Statistics, CSV
@@ -850,7 +850,7 @@ end # module
 
 \subsubsection{Exemplo de Uso do Sistema}
 
-\begin{lstlisting}[language=Python, caption=Exemplo de uso do sistema de recomendação]
+\begin{lstlisting}[language=Julia, caption=Exemplo de uso do sistema de recomendação]
 # Carregar o módulo
 using BeerRecommendation
 
