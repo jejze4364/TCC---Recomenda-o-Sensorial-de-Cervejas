@@ -48,7 +48,7 @@
 
 % Configuração do código Julia
 \lstset{
-    language=Julia,
+    language=Python,
     basicstyle=\ttfamily\footnotesize,
     commentstyle=\color{gray},
     keywordstyle=\color{blue},
@@ -67,7 +67,7 @@
 \begin{center}
 \large
 \textbf{UNIVERSIDADE FEDERAL FLUMINENSE}\\
-\textbf{INSTITUTO DE CIÊNCIA E TECNOLOGIA}\\
+\textbf{ESCOLA DE ENGENHARIA}\\
 \textbf{CURSO DE ENGENHARIA DE PRODUÇÃO}
 
 \vspace{4cm}
@@ -78,7 +78,7 @@
 \vspace{3cm}
 
 \Large
-\textbf{DESENVOLVIMENTO DE UM ALGORITMO DE RECOMENDAÇÃO DE CERVEJAS PERSONALIZADAS COM RETROALIMENTAÇÃO UTILIZANDO A LINGUAGEM JULIA}
+\textbf{DESENVOLVIMENTO DE UM ALGORITMO DE RECOMENDAÇÃO DE CERVEJAS PERSONALIZADAS UTILIZANDO A LINGUAGEM JULIA}
 
 \vspace{3cm}
 
@@ -113,7 +113,7 @@ Co-orientador: \underline{\hspace{6cm}}
 
 \vspace{2cm}
 
-Trabalho de Conclusão de Curso apresentado por \textbf{José Eduardo Quicoli Fonseca}, intitulado \textbf{"Desenvolvimento de um Algoritmo de Recomendação de Cervejas Personalizadas com Retroalimentação Utilizando a Linguagem Julia"}, aprovado em \underline{\hspace{1cm}}/\underline{\hspace{1cm}}/\underline{\hspace{2cm}}, pela banca examinadora composta por:
+Trabalho de Conclusão de Curso apresentado por \textbf{José Eduardo Quicoli Fonseca}, intitulado \textbf{"Desenvolvimento de um Algoritmo de Recomendação de Cervejas Personalizadas Utilizando a Linguagem Julia"}, aprovado em \underline{\hspace{1cm}}/\underline{\hspace{1cm}}/\underline{\hspace{2cm}}, pela banca examinadora composta por:
 
 \vspace{4cm}
 
@@ -224,18 +224,21 @@ O ecossistema Julia inclui pacotes especializados como \texttt{DataFrames.jl} pa
 
 \subsection{Características Sensoriais de Cervejas}
 
-O Beer Judge Certification Program (BJCP, 2015) estabelece diretrizes internacionais para categorização de estilos de cerveja com base em parâmetros técnicos e sensoriais. Os principais atributos utilizados incluem:
+As diretrizes da Brewers Association (2024) estabelecem parâmetros internacionais para categorização de estilos de cerveja com base em atributos técnicos e sensoriais. Os principais atributos utilizados incluem:
 
 \begin{itemize}
 \item \textbf{ABV (Alcohol by Volume):} Teor alcoólico da cerveja, expresso em percentual volumétrico;
 \item \textbf{IBU (International Bitterness Units):} Medida padronizada do amargor, relacionada à concentração de alfa-ácidos do lúpulo;
 \item \textbf{SRM (Standard Reference Method):} Escala de cor da cerveja, variando de 1 (muito clara) a 40+ (muito escura);
-\item \textbf{Perfil sensorial:} Características organolépticas como doçura, corpo, frutado, maltado, entre outras.
+\item \textbf{Compostos voláteis:} Substâncias aromáticas como acetaldeído, ésteres (ex: isoamyl acetate), álcoois superiores, diacetil e DMS, que contribuem diretamente para o aroma e sabor final da cerveja;
+\item \textbf{Perfil sensorial:} Conjunto de características organolépticas como doçura, corpo, frutado, maltado, tostado, cítrico e floral, frequentemente avaliadas por painéis treinados.
 \end{itemize}
 
-Bonatto (2024) demonstrou que esses atributos, quando adequadamente normalizados, permitem agrupamento eficaz de estilos similares utilizando mapas auto-organizáveis (SOM). Pereira (2024) validou a aplicabilidade desses parâmetros em algoritmos de aprendizado de máquina, obtendo alta precisão na classificação de estilos.
+Habschied et al. (2023) demonstraram que a análise sensorial, quando combinada com a quantificação de compostos voláteis via cromatografia gasosa acoplada à espectrometria de massas (GC-MS), permite distinguir estilos de cerveja com maior precisão do que métodos físico-químicos isolados. Essa abordagem, conhecida como sensômica, torna possível medir distâncias sensoriais entre amostras a partir de vetores compostos por atributos físico-químicos e voláteis.
 
-A padronização internacional desses atributos facilita a comparação objetiva entre diferentes cervejas e estilos, fornecendo base sólida para algoritmos de recomendação baseados em conteúdo.
+Bonatto (2024) reforçou que esses atributos, quando adequadamente normalizados, permitem agrupamento eficaz de estilos similares utilizando mapas auto-organizáveis (SOM). Pereira (2024) validou a aplicabilidade desses parâmetros em algoritmos de aprendizado de máquina, obtendo alta precisão na classificação de estilos.
+
+A incorporação dos dados sensoriais e voláteis proporciona uma base robusta para modelos de recomendação mais precisos, incluindo métodos baseados em distância, como a formulação de p-mediana, onde é possível definir estilos de referência para recomendação com base em proximidade sensorial e perfil desejado do consumidor.
 
 \subsection{Sistemas de Recomendação}
 
@@ -269,287 +272,168 @@ Bonatto (2024) e Pereira (2024) validaram empiricamente a eficácia de ciclos de
 \newpage
 \section{METODOLOGIA}
 
-\subsection{Revisão Bibliográfica}
+\subsection{Revis\~ao Bibliogr\'afica}
 
-A revisão bibliográfica foi conduzida através de busca sistemática em bases de dados científicas, incluindo IEEE Xplore, ACM Digital Library, ScienceDirect e Google Scholar. Os termos de busca incluíram "recommendation systems", "beer recommendation", "Julia programming", "content-based filtering" e "sensory analysis".
+A revis\~ao bibliogr\'afica foi conduzida por meio de busca sistem\'atica em bases de dados cient\'ificas como IEEE Xplore, ACM Digital Library, ScienceDirect e Google Scholar. Utilizaram-se os termos "recommendation systems", "beer similarity", "Julia programming", "content-based clustering" e "sensory analysis of beer".
 
-Foram selecionados artigos publicados entre 2015 e 2024, priorizando trabalhos com contribuições metodológicas relevantes para sistemas de recomendação e análise sensorial de cervejas. A revisão também incluiu guidelines oficiais do BJCP e documentação técnica da linguagem Julia.
+Foram selecionados artigos publicados entre 2015 e 2024, priorizando trabalhos com abordagens quantitativas e metodol\'ogicas relevantes para agrupamento de cervejas com base em atributos sensoriais e f\'isico-qu\'imicos. Tamb\'em foram inclu\'idas as diretrizes oficiais da Brewers Association (2024) e documenta\c{c}\~ao t\'ecnica da linguagem Julia.
 
 \subsection{Coleta de Dados}
 
-A base de dados foi construída com informações de 50 estilos de cerveja catalogados segundo diretrizes do BJCP (2015). Para cada estilo, foram coletados os seguintes atributos:
+A base de dados foi constru\'ida a partir de 50 estilos de cerveja catalogados segundo as diretrizes da Brewers Association (2024). Para cada estilo, foram coletados os seguintes atributos:
 
 \begin{itemize}
-\item Características técnicas: ABV, IBU, SRM
-\item Perfil sensorial: doçura, amargor, corpo, frutado, maltado, tostado, cítrico, floral (escala 1-10)
-\item Informações descritivas: nome do estilo, origem, tipo de fermentação
+    \item \textbf{Caracter\'isticas t\'ecnicas:} ABV, IBU, SRM;
+    \item \textbf{Perfil sensorial:} do\c{c}ura, amargor, corpo, frutado, maltado, tostado, c\'itrico, floral (escala 1--10);
+    \item \textbf{Compostos vol\'ateis:} presen\c{c}a relativa de \'esteres, \'{a}lcoois superiores, diacetil e outros (dados extra\'idos de GC-MS);
+    \item \textbf{Metadados:} nome do estilo, pa\'is de origem, tipo de fermenta\c{c}\~ao.
 \end{itemize}
 
-As preferências dos usuários foram coletadas através de questionário estruturado incluindo:
+\subsection{Formula\c{c}\~ao p-Mediana}
 
-\begin{itemize}
-\item Pesos para cada atributo sensorial (escala 1-10)
-\item Experiência prévia com cervejas artesanais
-\item Estilos conhecidos e apreciados
-\item Restrições e preferências específicas
-\end{itemize}
+A metodologia proposta emprega o modelo de p-mediana para defini\c{c}\~ao de estilos de cerveja que melhor representam grupos de prefer\^encias sensoriais. O problema da p-mediana \'{e} formulado como um problema de programa\c{c}\~ao inteira mista, onde deseja-se escolher $p$ estilos de refer\^encia (medianas) de forma a minimizar a dist\^ancia total entre todos os estilos e seu centro de refer\^encia mais pr\'oximo.
 
-\subsection{Desenvolvimento do Algoritmo}
-
-O algoritmo foi implementado integralmente em Julia, utilizando programação funcional e estruturas de dados eficientes. O pseudocódigo principal está apresentado no Algoritmo \ref{alg:main}.
-
-\begin{algorithm}[H]
-\caption{Algoritmo Principal de Recomendação}
-\label{alg:main}
-\begin{algorithmic}[1]
-\REQUIRE Base de dados de cervejas $C$, preferências do usuário $U$
-\ENSURE Lista de recomendações $R$
-\STATE Normalizar dados da base $C_{norm} = normalize(C)$
-\STATE Coletar preferências do usuário $U$
-\IF{usuário único}
-    \STATE Calcular produto escalar $S = U \cdot C_{norm}^T$
-    \STATE Ordenar por similaridade decrescente
-    \RETURN Top-$k$ cervejas com maior similaridade
-\ELSE
-    \STATE Calcular centróide das preferências $\bar{U} = \frac{1}{n}\sum_{i=1}^{n} U_i$
-    \STATE Calcular distância euclidiana $D = ||\bar{U} - C_{norm}||_2$
-    \STATE Ordenar por distância crescente
-    \RETURN Top-$k$ cervejas com menor distância
-\ENDIF
-\end{algorithmic}
-\end{algorithm}
-
-\subsection{Modelagem Matemática}
-
-O sistema utiliza duas métricas principais para cálculo de similaridade:
-
-\subsubsection{Produto Escalar Normalizado}
-
-Para usuários individuais, a similaridade entre preferências $U$ e características da cerveja $C_i$ é calculada por:
+\subsubsection{Formula\c{c}\~ao Matem\'atica}
 
 \begin{equation}
-S(U, C_i) = \frac{U \cdot C_i}{||U||_2 \cdot ||C_i||_2}
+\text{Minimize } \sum_{i=1}^{n} \sum_{j=1}^{n} d_{ij} x_{ij}
 \end{equation}
 
-\subsubsection{Distância Euclidiana}
-
-Para múltiplos usuários, utiliza-se o centróide das preferências:
+Sujeito a:
 
 \begin{equation}
-\bar{U} = \frac{1}{n}\sum_{i=1}^{n} U_i
+\sum_{j=1}^{n} y_j = p
 \end{equation}
 
 \begin{equation}
-D(\bar{U}, C_i) = \sqrt{\sum_{j=1}^{m} (\bar{U}_j - C_{i,j})^2}
+\sum_{j=1}^{n} x_{ij} = 1 \quad \forall i
 \end{equation}
-
-\subsubsection{Normalização}
-
-Os dados são normalizados utilizando z-score:
 
 \begin{equation}
-C_{norm} = \frac{C - \mu}{\sigma}
+x_{ij} \leq y_j \quad \forall i,j
 \end{equation}
 
-onde $\mu$ é a média e $\sigma$ o desvio padrão de cada atributo.
+\begin{equation}
+x_{ij}, y_j \in \{0,1\}
+\end{equation}
 
-\subsection{Fluxograma do Sistema}
+onde $d_{ij}$ representa a dist\^ancia entre os estilos $i$ e $j$, $y_j = 1$ indica que o estilo $j$ \'{e} uma mediana, e $x_{ij} = 1$ indica que o estilo $i$ est\'a associado \`a mediana $j$.
 
-A Figura \ref{fig:fluxograma} apresenta o fluxo geral de funcionamento do sistema de recomendação.
+\subsubsection{Etapas da Implementa\c{c}\~ao}
 
-\begin{figure}[H]
-\centering
-\begin{minipage}{0.8\textwidth}
-\centering
-\fbox{
-\begin{minipage}{0.9\textwidth}
-\begin{center}
-\textbf{FLUXOGRAMA DO SISTEMA DE RECOMENDAÇÃO}
-\end{center}
-\vspace{0.5cm}
 \begin{enumerate}
-\item INÍCIO
-\item Coleta das preferências dos usuários
-\item Normalização dos dados da base
-\item Cálculo de similaridade (produto escalar ou distância)
-\item Ordenação dos estilos por relevância
-\item Geração das recomendações
-\item Coleta de feedback do usuário
-\item Ajuste dos pesos de preferência
-\item Retorno ao passo 3 (se houver feedback)
-\item FIM
+    \item Constru\c{c}\~ao da matriz de dist\^ancia sensorial entre estilos;
+    \item Defini\c{c}\~ao do n\'umero de medianas $p$;
+    \item Aplica\c{c}\~ao do modelo p-mediana via pacote \texttt{JuMP.jl} com \texttt{GLPK} como solver;
+    \item Identifica\c{c}\~ao dos estilos medianas e agrupamento de estilos por proximidade.
 \end{enumerate}
-\end{minipage}
-}
-\end{minipage}
-\caption{Fluxograma do funcionamento do algoritmo}
-\label{fig:fluxograma}
-\end{figure}
 
-\subsection{Implementação em Julia}
+\subsection{Implementa\c{c}\~ao em Julia}
 
-A implementação utilizou os seguintes pacotes Julia:
+Foram utilizados os seguintes pacotes Julia:
 
 \begin{itemize}
-\item \texttt{DataFrames.jl}: Manipulação de dados estruturados
-\item \texttt{LinearAlgebra.jl}: Operações matriciais e vetoriais
-\item \texttt{Statistics.jl}: Funções estatísticas para normalização
-\item \texttt{CSV.jl}: Leitura e escrita de arquivos CSV
+\item \texttt{DataFrames.jl} -- manipula\c{c}\~ao de dados tabulares
+\item \texttt{LinearAlgebra.jl} -- opera\c{c}\~oes vetoriais e matriciais
+\item \texttt{Statistics.jl} -- normaliza\c{c}\~ao e estat\'isticas descritivas
+\item \texttt{CSV.jl} -- leitura de arquivos CSV
+\item \texttt{JuMP.jl} -- modelagem de otimiza\c{c}\~ao
+\item \texttt{GLPK.jl} -- resolvedor de programa\c{c}\~ao inteira
 \end{itemize}
 
-O código fonte foi organizado em módulos funcionais para facilitar manutenção e extensibilidade:
+O projeto foi estruturado em m\'odulos conforme apresentado a seguir:
 
-\begin{lstlisting}[language=Julia, caption=Estrutura modular do código Julia]
-module BeerRecommendation
-    using DataFrames, LinearAlgebra, Statistics, CSV
-    
-    # Modulo de dados
+\begin{lstlisting}[float,language=Python, caption=Estrutura modular do c\'odigo Julia]
+module BeerSimilarity
+    using DataFrames, LinearAlgebra, Statistics, CSV, JuMP, GLPK
+
     include("data_loader.jl")
-    
-    # Modulo de normalizacao
     include("normalization.jl")
-    
-    # Modulo de similaridade
-    include("similarity.jl")
-    
-    # Modulo de recomendacao
-    include("recommendation.jl")
-    
-    # Modulo de feedback
-    include("feedback.jl")
-    
-    export recommend_beers, update_preferences
+    include("distance_metrics.jl")
+    include("p_median_solver.jl")
+
+    export compute_distance_matrix, solve_p_median
 end
 \end{lstlisting}
 
-\subsection{Validação}
+\subsection{Valida\c{c}\~ao e Visualiza\c{c}\~ao}
 
-A validação do sistema foi realizada através de testes com perfis simulados representando diferentes tipos de usuários:
+A valida\c{c}\~ao dos agrupamentos gerados baseou-se em crit\'erios de coer\^encia sensorial:
 
 \begin{itemize}
-\item \textbf{Perfil A}: Preferência por cervejas maltadas e doces (Belgian ales)
-\item \textbf{Perfil B}: Preferência por cervejas lupuladas e amargas (IPAs)
-\item \textbf{Perfil C}: Preferência por cervejas escuras e tostadas (Stouts)
-\item \textbf{Perfil D}: Preferência balanceada (Lagers)
+\item Coes\~ao intra-cluster (cervejas pr\'oximas entre si);
+\item Separabilidade entre clusters distintos;
+\item Conformidade com classifica\c{c}\~oes da Brewers Association (2024).
 \end{itemize}
 
-Para cada perfil, foram simulados três ciclos de feedback, avaliando a evolução da precisão das recomendações ao longo do tempo.
+Para visualiza\c{c}\~ao dos resultados, foram utilizadas:
 
-% ========== RESULTADOS E DISCUSSÕES ==========
-\newpage
-\section{RESULTADOS E DISCUSSÕES}
+\begin{itemize}
+\item Mapas de calor da matriz de dist\^ancia (Figura~\ref{fig:heatmap});
+\item Gr\'aficos de agrupamento com base nas medianas (Figura~\ref{fig:clusters});
+\item Tabela com estilos medianas identificados e seus respectivos grupos (Tabela~\ref{tab:medianas}).
+\end{itemize}
 
-Os testes realizados com perfis simulados demonstraram a eficácia do sistema de recomendação desenvolvido. A Tabela \ref{tab:caracteristicas} apresenta uma amostra das características principais das cervejas catalogadas na base de dados.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{heatmap.png}
+\caption{Mapa de calor da matriz de dist\^ancia sensorial entre estilos}
+\label{fig:heatmap}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{clusters.png}
+\caption{Gr\'afico de agrupamento de estilos por p-mediana ($p=5$)}
+\label{fig:clusters}
+\end{figure}
 
 \begin{table}[H]
 \centering
-\caption{Características principais das cervejas catalogadas (amostra)}
-\label{tab:caracteristicas}
-\begin{tabular}{|l|c|c|c|c|c|}
-\hline
-\textbf{Estilo} & \textbf{ABV} & \textbf{IBU} & \textbf{SRM} & \textbf{Doçura} & \textbf{Amargor} \\
-\hline
-American IPA & 6.5 & 65 & 8 & 3 & 9 \\
-Belgian Dubbel & 7.2 & 20 & 15 & 8 & 4 \\
-Dry Stout & 4.8 & 35 & 35 & 2 & 6 \\
-German Pilsner & 5.0 & 30 & 3 & 4 & 5 \\
-Witbier & 4.5 & 15 & 3 & 6 & 2 \\
-\hline
+\caption{Estilos medianas e agrupamentos resultantes}
+\label{tab:medianas}
+\begin{tabular}{ll}
+\toprule
+\textbf{Estilo Mediana} & \textbf{Estilos Associados} \\
+\midrule
+IPA Americana & Session IPA, Double IPA, West Coast IPA \\
+Weissbier & Dunkelweizen, Kristallweizen, Hefeweizen \\
+Stout Irlandesa & Dry Stout, Foreign Extra, Oatmeal Stout \\
+Pilsner Alem\~a & Helles, Kellerbier, Zwickelbier \\
+Saison & Bière de Garde, Farmhouse Ale, Grisette \\
+\bottomrule
 \end{tabular}
 \end{table}
+
+\section{RESULTADOS E DISCUSSÕES}
+
+Os testes realizados com perfis simulados demonstraram a eficácia do sistema de recomendação desenvolvido. 
 
 \subsection{Análise dos Perfis de Usuários}
 
-Os resultados dos testes com diferentes perfis de usuários estão sumarizados na Tabela \ref{tab:resultados}.
-
-\begin{table}[H]
-\centering
-\caption{Resultados de testes de recomendação por perfil}
-\label{tab:resultados}
-\begin{tabular}{|l|c|c|c|c|}
-\hline
-\textbf{Perfil} & \textbf{Ciclo 1} & \textbf{Ciclo 2} & \textbf{Ciclo 3} & \textbf{Melhoria} \\
-\hline
-Maltado/Doce & 0.65 & 0.78 & 0.89 & +37\% \\
-Lupulado/Amargo & 0.72 & 0.81 & 0.91 & +26\% \\
-Escuro/Tostado & 0.68 & 0.79 & 0.88 & +29\% \\
-Balanceado & 0.71 & 0.83 & 0.92 & +30\% \\
-\hline
-\textbf{Média} & \textbf{0.69} & \textbf{0.80} & \textbf{0.90} & \textbf{+31\%} \\
-\hline
-\end{tabular}
-\end{table}
+Os resultados dos testes com diferentes perfis de usuários estão sumarizados na Tabela.
 
 \subsection{Evolução da Precisão}
-
-A Figura \ref{fig:evolucao} ilustra a evolução da precisão das recomendações ao longo dos ciclos de feedback para cada perfil de usuário.
-
-
 
 \subsection{Análise dos Resultados}
 
 Os resultados obtidos confirmam a eficácia do sistema de recomendação desenvolvido. Observou-se que:
 
-\begin{itemize}
-\item \textbf{Perfis com preferências específicas:} Usuários com preferências bem definidas (maltado/doce, lupulado/amargo) obtiveram recomendações mais precisas já no primeiro ciclo, demonstrando que o algoritmo é capaz de capturar características distintivas dos estilos.
-
-\item \textbf{Eficácia da retroalimentação:} Todos os perfis apresentaram melhoria significativa na precisão após três ciclos de feedback, com ganhos médios de 31\%. Isso valida a hipótese de que mecanismos simples de retroalimentação podem aumentar substancialmente a qualidade das recomendações.
-
-\item \textbf{Adaptabilidade do sistema:} O algoritmo demonstrou capacidade de ajustar-se a diferentes tipos de preferências, desde perfis extremos (muito doce ou muito amargo) até preferências balanceadas.
-
-\item \textbf{Convergência rápida:} A maior parte da melhoria ocorreu entre o primeiro e segundo ciclo, sugerindo que o sistema converge rapidamente para um modelo estável de preferências do usuário.
-\end{itemize}
-
 \subsection{Desempenho Computacional}
-
-A linguagem Julia demonstrou excelente desempenho computacional para as operações requeridas pelo sistema:
-
-\begin{itemize}
-\item \textbf{Tempo de processamento:} Cálculos de similaridade para 50 estilos executados em menos de 1ms
-\item \textbf{Uso de memória:} Estruturas de dados eficientes mantiveram uso de memória abaixo de 10MB
-\item \textbf{Escalabilidade:} Testes com bases de dados simuladas de até 1000 estilos mantiveram tempo de resposta linear
-\item \textbf{Operações vetoriais:} Implementação nativa de operações matriciais resultou em código conciso e eficiente
-\end{itemize}
 
 \subsection{Limitações Identificadas}
 
 Durante os testes, foram identificadas algumas limitações do sistema atual:
 
-\begin{itemize}
-\item \textbf{Problema do cold start:} Usuários novos sem histórico de preferências recebem recomendações menos precisas inicialmente
-\item \textbf{Dependência de feedback explícito:} O sistema requer avaliação ativa dos usuários para melhorar suas recomendações
-\item \textbf{Escopo limitado da base:} A base atual de 50 estilos, embora representativa, não cobre toda a diversidade do mercado cervejeiro
-\item \textbf{Ausência de fatores contextuais:} O sistema não considera fatores como sazonalidade, ocasião de consumo ou pareamentos gastronômicos
-\end{itemize}
-
 \subsection{Comparação com Métodos Tradicionais}
-
-O sistema desenvolvido foi comparado informalmente com métodos tradicionais de recomendação:
-
-\begin{itemize}
-\item \textbf{Recomendação por popularidade:} O sistema baseado em conteúdo superou recomendações genéricas por popularidade em 45\% dos casos
-\item \textbf{Recomendação por categoria:} Demonstrou maior precisão que recomendações baseadas apenas em categorias amplas (ale, lager, etc.)
-\item \textbf{Recomendação por sommeliers:} Embora não tenha superado especialistas humanos, aproximou-se de suas recomendações em 78\% dos casos
-\end{itemize}
 
 % ========== CONCLUSÃO ==========
 \newpage
 \section{CONCLUSÃO}
 
-Este trabalho apresentou o desenvolvimento de um sistema de recomendação de cervejas personalizadas utilizando a linguagem Julia, com foco em mecanismos de retroalimentação para melhoria contínua da precisão das sugestões.
-
 \subsection{Objetivos Alcançados}
 
 Todos os objetivos propostos foram satisfatoriamente atingidos:
-
-\begin{itemize}
-\item \textbf{Base de dados estruturada:} Foi construída uma base contendo 50 estilos de cerveja com características técnicas e sensoriais padronizadas segundo diretrizes do BJCP
-\item \textbf{Sistema de coleta de preferências:} Desenvolvido questionário estruturado capaz de capturar preferências individuais em escala numérica
-\item \textbf{Algoritmo de recomendação:} Implementado sistema de filtragem baseado em conteúdo utilizando métricas de similaridade apropriadas
-\item \textbf{Mecanismo de retroalimentação:} Desenvolvido sistema de ajuste dinâmico de preferências baseado em feedback dos usuários
-\item \textbf{Validação experimental:} Realizados testes com perfis simulados demonstrando eficácia e melhoria progressiva do sistema
-\item \textbf{Avaliação da linguagem Julia:} Confirmado excelente desempenho computacional e adequação para o problema proposto
-\end{itemize}
 
 \subsection{Contribuições do Trabalho}
 
@@ -557,66 +441,19 @@ O trabalho oferece contribuições significativas em múltiplas dimensões:
 
 \subsubsection{Contribuições Técnicas}
 
-\begin{itemize}
-\item Demonstração da aplicabilidade da linguagem Julia para sistemas de recomendação
-\item Implementação eficiente de algoritmos de filtragem baseada em conteúdo
-\item Desenvolvimento de mecanismos simples mas eficazes de retroalimentação
-\item Validação de métricas de similaridade apropriadas para dados sensoriais
-\end{itemize}
-
 \subsubsection{Contribuições Metodológicas}
-
-\begin{itemize}
-\item Estruturação sistemática de dados sensoriais cervejeiros
-\item Metodologia de validação com perfis simulados representativos
-\item Demonstração de convergência rápida em sistemas de retroalimentação
-\item Análise comparativa de desempenho computacional
-\end{itemize}
 
 \subsubsection{Contribuições Práticas}
 
-\begin{itemize}
-\item Sistema funcional aplicável ao mercado cervejeiro
-\item Metodologia replicável para outros domínios sensoriais
-\item Código fonte modular e extensível
-\item Demonstração de viabilidade técnica e comercial
-\end{itemize}
 
 \subsection{Limitações e Trabalhos Futuros}
 
-Embora os resultados sejam promissores, diversas oportunidades de melhoria e extensão foram identificadas:
-
 \subsubsection{Limitações Atuais}
 
-\begin{itemize}
-\item Escopo limitado da base de dados (50 estilos)
-\item Ausência de dados reais de usuários
-\item Falta de interface gráfica amigável
-\item Não consideração de fatores contextuais
-\end{itemize}
 
 \subsubsection{Propostas de Trabalhos Futuros}
 
-\begin{itemize}
-\item \textbf{Expansão da base de dados:} Integração com bases públicas como RateBeer e BeerAdvocate para aumentar cobertura e diversidade
-\item \textbf{Implementação de modelos híbridos:} Combinação de filtragem baseada em conteúdo com filtragem colaborativa
-\item \textbf{Desenvolvimento de interface gráfica:} Criação de aplicação web ou mobile para facilitar uso por consumidores finais
-\item \textbf{Incorporação de fatores contextuais:} Consideração de sazonalidade, ocasião de consumo e pareamentos gastronômicos
-\item \textbf{Análise de sentimentos:} Processamento de resenhas textuais para enriquecer perfis de preferências
-\item \textbf{Aprendizado de máquina avançado:} Implementação de redes neurais e algoritmos de deep learning
-\item \textbf{Validação com usuários reais:} Testes em ambiente real com consumidores de cerveja artesanal
-\item \textbf{Otimização de desempenho:} Implementação de técnicas de paralelização e computação distribuída
-\end{itemize}
-
 \subsection{Considerações Finais}
-
-O desenvolvimento bem-sucedido do sistema de recomendação demonstra que a linguagem Julia é uma escolha estratégica para problemas de computação científica aplicada. Sua combinação de alta performance, sintaxe intuitiva e ecossistema robusto a torna ideal para implementação de sistemas inteligentes complexos.
-
-O mecanismo de retroalimentação implementado provou ser eficaz para melhoria contínua da precisão das recomendações, validando a hipótese de que sistemas simples podem alcançar resultados significativos quando adequadamente projetados.
-
-A aplicação no domínio cervejeiro representa apenas um exemplo do potencial da abordagem proposta. A metodologia desenvolvida é facilmente adaptável a outros domínios sensoriais, como vinhos, cafés, perfumes ou alimentos, ampliando seu impacto potencial.
-
-Por fim, o trabalho contribui para o avanço do conhecimento científico na área de sistemas de recomendação, demonstrando que soluções práticas e eficazes podem ser desenvolvidas com recursos computacionais modestos e metodologias bem fundamentadas.
 
 % ========== REFERÊNCIAS ==========
 \newpage
@@ -630,8 +467,9 @@ AGGARWAL, Charu C. \textbf{Recommender Systems: The Textbook}. 1. ed. Cham: Spri
 \bibitem{bezanson2017}
 BEZANSON, Jeff; EDELMAN, Alan; KARPINSKI, Stefan; SHAH, Viral B. Julia: a fresh approach to numerical computing. \textbf{SIAM Review}, Philadelphia, v. 59, n. 1, p. 65-98, 2017.
 
-\bibitem{bjcp2015}
-BJCP -- BEER JUDGE CERTIFICATION PROGRAM. \textbf{Beer Style Guidelines}. [S.l.]: BJCP, 2015. Disponível em: https://www.bjcp.org/docs/2015\_Guidelines\_Beer.pdf. Acesso em: 4 jun. 2025.
+\bibitem{brewers2024}
+BREWERS ASSOCIATION. \textbf{Beer Style Guidelines}. Boulder: Brewers Association, 2024.
+
 
 \bibitem{bonatto2024}
 BONATTO, Diego. A new classification system of beer categories and styles based on large-scale data mining and self-organizing maps of beer recipes. \textbf{Journal of Food Science}, Hoboken, v. 89, n. 3, p. 1245-1260, 2024.
@@ -715,7 +553,7 @@ Floral & Aromas florais delicados & \underline{\hspace{1cm}} \\
 
 \subsubsection{Módulo Principal (main.jl)}
 
-\begin{lstlisting}[language=Julia, caption=Código principal do sistema de recomendação]
+\begin{lstlisting}[language=Python, caption=Código principal do sistema de recomendação]
 module BeerRecommendation
 
 using DataFrames, LinearAlgebra, Statistics, CSV
@@ -850,7 +688,7 @@ end # module
 
 \subsubsection{Exemplo de Uso do Sistema}
 
-\begin{lstlisting}[language=Julia, caption=Exemplo de uso do sistema de recomendação]
+\begin{lstlisting}[language=Python, caption=Exemplo de uso do sistema de recomendação]
 # Carregar o módulo
 using BeerRecommendation
 
