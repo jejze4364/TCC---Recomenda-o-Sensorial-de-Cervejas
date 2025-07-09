@@ -154,9 +154,13 @@ function parse_tex_directory(dir::AbstractString)
         for f in files
             endswith(f, ".tex") || continue
             f in ["header.tex", "index.tex"] && continue
-            style = replace(basename(f), ".tex" => "")
+            style = basename(root)  # Usa o nome da pasta como identificador do estilo
             sections = parse_style_file(joinpath(root, f))
-            styles[style] = sections
+            if haskey(styles, style)
+                merge!(styles[style], sections)
+            else
+                styles[style] = sections
+            end
         end
     end
 
