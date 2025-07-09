@@ -1,17 +1,17 @@
 include("data_loader.jl")
 include("preprocessing.jl")
 include("solve_p_median.jl")
-
 using .BeerData
 using .Preprocessing
 using .PMedianSolver
 
-# Carregar e integrar dados
+# Carregar e integrar dados numéricos
 beer_df = load_beer_data()
+# Extrair descrições em texto dos arquivos .tex
+tex_df = parse_tex_directory("data")
 
 # Determinar coluna de identificacao (Estilo ou Categoria)
 key = :Estilo in names(beer_df) ? :Estilo : ( :Categoria in names(beer_df) ? :Categoria : first(names(beer_df)) )
-
 estilos = beer_df[!, key]
 features = convert(Matrix{Float64}, select(beer_df, Not(key)))
 

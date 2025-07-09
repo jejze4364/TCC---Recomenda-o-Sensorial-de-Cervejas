@@ -3,9 +3,10 @@ module BeerData
 using CSV
 using DataFrames
 using Statistics
+using Unicode
 using Missings
 
-export load_style_data, load_beer_data
+export load_style_data, load_beer_data, parse_tex_directory
 
 """
     load_style_data(path::AbstractString) -> (Vector{String}, Matrix{Float64})
@@ -109,6 +110,65 @@ function load_beer_data(; data_dir="data")
 
     impute_missing!(combined)
     return combined
+end
+
+"""
+    parse_style_file(path::AbstractString) -> Dict{String,String}
+
+Read a beer style description in LaTeX format and return a dictionary
+mapping section titles (e.g. `"Aroma"`, `"Sabor"`) to cleaned text.
+"""
+function parse_style_file(path::AbstractString)
+    txt = read(path, String)
+    # Remove common LaTeX commands and environments
+    txt = replace(txt, r"\\begin\{[^}]*\}" => " ")
+    txt = replace(txt, r"\\end\{[^}]*\}" => " ")
+    txt = replace(txt, r"\\(?:subsection|section|addcontentsline|phantomsection)\*?\{[^}]*\}" => " ")
+    # Split using bold section titles
+    parts = split(txt, r"\\textbf\{")
+    sections = Dict{String,String}()
+    for part in parts[2:end]
+        m = match(r"([^}]*)\}:\s*(.*)", part)
+        m === nothing && continue
+        key = strip(m.captures[1])
+        val = m.captures[2]
+        val = replace(val, r"\\[a-zA-Z]+" => " ")
+        val = replace(val, r"[{}]" => "")
+        val = replace(val, '\n' => ' ')
+        val = replace(val, r"\s+" => " ")
+        sections[key] = strip(val)
+    end
+    return sections
+end
+
+"""
+    parse_tex_directory(dir::AbstractString) -> DataFrame
+
+Walk through `dir` recursively and parse all `.tex` files, returning a
+`DataFrame` where each row corresponds to a style and each column to a
+section found in the files.
+"""
+function parse_tex_directory(dir::AbstractString)
+    styles = Dict{String,Dict{String,String}}()
+    for (root, _, files) in walkdir(dir)
+        for f in files
+            endswith(f, ".tex") || continue
+            f in ["header.tex", "index.tex"] && continue
+            style = replace(basename(f), ".tex" => "")
+            sections = parse_style_file(joinpath(root, f))
+            styles[style] = sections
+        end
+    end
+
+    cols = Set{String}()
+    for sec in values(styles)
+        union!(cols, keys(sec))
+    end
+    df = DataFrame(Estilo=collect(keys(styles)))
+    for c in cols
+        df[!, c] = [get(styles[s], c, missing) for s in keys(styles)]
+    end
+    return df
 end
 
 end # module
