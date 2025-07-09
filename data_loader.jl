@@ -4,6 +4,7 @@ using CSV
 using DataFrames
 using Statistics
 using Unicode
+using Missings
 
 export load_style_data, load_beer_data, parse_tex_directory
 
