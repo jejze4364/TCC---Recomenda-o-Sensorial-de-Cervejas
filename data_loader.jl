@@ -75,41 +75,44 @@ function impute_missing!(df::DataFrame)
 end
 
 """
-    load_beer_data(; data_dir="data") -> DataFrame
+    load_beer_data(path::AbstractString="data/2015_Guidelines_numbers_OK.csv") -> DataFrame
 
-Automatically load all CSV files inside `data_dir` and merge them on
-common textual keys, cleaning and imputing numeric data.
+Carrega e processa os dados do arquivo oficial do BJCP, extraindo colunas relevantes
+e calculando médias entre colunas min/max (ex: ABV, IBU, SRM).
 """
-function load_beer_data(; data_dir="data")
-    files = filter(f -> endswith(lowercase(f), ".csv"), readdir(data_dir))
-    dfs = DataFrame[]
-    for f in files
-        path = joinpath(data_dir, f)
-        df = CSV.read(path, DataFrame; delim=';', ignorerepeated=true)
-        clean_numeric!(df)
-        push!(dfs, df)
-    end
+function load_beer_data(path::AbstractString="data/2015_Guidelines_numbers_OK.csv")
+    df = CSV.read(path, DataFrame; delim=',', ignorerepeated=true)
+    clean_numeric!(df)
 
-    combined = DataFrame()
-    for df in dfs
-        key = if :Estilo in names(df)
-            :Estilo
-        elseif :Categoria in names(df)
-            :Categoria
-        else
-            first(names(df))
-        end
-        if ncol(combined) == 0
-            combined = df
-        elseif key in names(combined)
-            combined = outerjoin(combined, df, on=key, makeunique=true)
-        else
-            combined = hcat(combined, df; makeunique=true)
-        end
-    end
+    # Calcular médias
+    df[!, :ABV] = mean.([df[!, Symbol("ABV min")] df[!, Symbol("ABV max")]], dims=2)
+    df[!, :IBU] = mean.([df[!, Symbol("IBUs min")] df[!, Symbol("IBUs max")]], dims=2)
+    df[!, :SRM] = mean.([df[!, Symbol("SRM min")] df[!, Symbol("SRM max")]], dims=2)
+    df[!, :OG]  = mean.([df[!, Symbol("OG min")] df[!, Symbol("OG max")]], dims=2)
+    df[!, :FG]  = mean.([df[!, Symbol("FG min")] df[!, Symbol("FG max")]], dims=2)
 
-    impute_missing!(combined)
-    return combined
+    # Renomear colunas para facilitar
+    rename!(df, Dict(
+        "BJCP Categories" => :Category,
+        "Styles" => :Style,
+        "Style Family" => :Family,
+        "Style History" => :Style_History,
+        "Overall Impression" => :Impression,
+        "Characteristic Ingredients" => :Ingredients,
+        "Style Comparison" => :Comparison,
+        "Commercial Examples" => :Examples
+    ))
+
+    selected = [
+        :Code, :Category, :Style, :Family, :Origin,
+        :ABV, :IBU, :SRM, :OG, :FG,
+        :Impression, :Aroma, :Appearance, :Flavor, :Mouthfell,
+        :Comments, :Style_History, :Ingredients, :Comparison, :Examples, :Notes
+    ]
+
+    df_clean = select(df, selected)
+    impute_missing!(df_clean)
+    return df_clean
 end
 
 """
@@ -120,11 +123,9 @@ mapping section titles (e.g. `"Aroma"`, `"Sabor"`) to cleaned text.
 """
 function parse_style_file(path::AbstractString)
     txt = read(path, String)
-    # Remove common LaTeX commands and environments
     txt = replace(txt, r"\\begin\{[^}]*\}" => " ")
     txt = replace(txt, r"\\end\{[^}]*\}" => " ")
     txt = replace(txt, r"\\(?:subsection|section|addcontentsline|phantomsection)\*?\{[^}]*\}" => " ")
-    # Split using bold section titles
     parts = split(txt, r"\\textbf\{")
     sections = Dict{String,String}()
     for part in parts[2:end]
@@ -154,9 +155,13 @@ function parse_tex_directory(dir::AbstractString)
         for f in files
             endswith(f, ".tex") || continue
             f in ["header.tex", "index.tex"] && continue
-            style = replace(basename(f), ".tex" => "")
+            style = basename(root)
             sections = parse_style_file(joinpath(root, f))
-            styles[style] = sections
+            if haskey(styles, style)
+                merge!(styles[style], sections)
+            else
+                styles[style] = sections
+            end
         end
     end
 
