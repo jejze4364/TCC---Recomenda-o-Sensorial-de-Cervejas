@@ -2,13 +2,24 @@ include("data_loader.jl")
 include("preprocessing.jl")
 include("solve_p_median.jl")
 
-using .BeerData, .Preprocessing, .PMedianSolver
+using .BeerData
+using .Preprocessing
+using .PMedianSolver
 
-# Carregar dados
-estilos, df = load_style_data("data/por_estilo.csv")
+# Carregar dados a partir do arquivo BJCP 2015
+beer_df = load_beer_data()
+
+# Extrair descrições em texto dos arquivos .tex
+tex_df = parse_tex_directory("data")
+
+# Determinar coluna de identificacao (Estilo ou Categoria)
+key = :Estilo in names(beer_df) ? :Estilo : ( :Categoria in names(beer_df) ? :Categoria : first(names(beer_df)) )
+
+estilos = beer_df[!, key]
+features = convert(Matrix{Float64}, select(beer_df, Not(key)))
 
 # Normalizar
-normalized_df = normalize_data(df)
+normalized_df = normalize_data(features)
 
 # Resolver p-mediana
 p = 3
